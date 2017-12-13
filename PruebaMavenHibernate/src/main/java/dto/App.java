@@ -1,4 +1,4 @@
-package PruebaMavenHibernate.PruebaMavenHibernate;
+package dto;
 
 /**
  * Hello world!
