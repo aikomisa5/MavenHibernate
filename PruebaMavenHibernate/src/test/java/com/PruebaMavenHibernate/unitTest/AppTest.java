@@ -1,4 +1,4 @@
-package unitTest;
+package com.PruebaMavenHibernate.unitTest;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
