@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "personas")
-public class Persona {
+public class Persona implements CRUD{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,9 +26,11 @@ public class Persona {
 	private String mail;
 	@Column(name = "dni")
 	private String dni;
+	@Column(name = "estadoRegistro")
+	private boolean estaBorrado;
 	
 	public Persona() {
-		
+		this.estaBorrado = false;		
 	}
 	
 	public Persona(String nombre, String apellido, int edad, String mail, String dni) {
@@ -36,7 +38,8 @@ public class Persona {
 		this.apellido = apellido;
 		this.edad = edad;
 		this.mail = mail;
-		this.dni = dni;		
+		this.dni = dni;	
+		this.estaBorrado = false;	
 	}
 	
 	protected Persona(Builder b) {
@@ -45,6 +48,7 @@ public class Persona {
 		this.dni = b.dni;
 		this.mail = b.mail;
 		this.edad = b.edad;
+		this.estaBorrado = false;
 	}
 	
 	public Long getId() {
@@ -84,6 +88,17 @@ public class Persona {
 	}
 	public void setDni(String dni) {
 		this.dni = dni;
+	}
+	
+	@Override
+	public void setBorrado(Boolean estaBorrado) {
+		this.estaBorrado = estaBorrado;
+		
+	}
+	
+	@Override
+	public Boolean getBorrado() {
+		return this.estaBorrado;
 	}
 	
 	public static class Builder {
@@ -128,5 +143,7 @@ public class Persona {
 			return new Persona(this);
 		}
 	}
+
+	
 	
 }
