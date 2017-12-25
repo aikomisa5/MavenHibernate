@@ -90,13 +90,11 @@ public class Persona implements CRUD{
 		this.dni = dni;
 	}
 	
-	@Override
 	public void setBorrado(Boolean estaBorrado) {
 		this.estaBorrado = estaBorrado;
 		
 	}
 	
-	@Override
 	public Boolean getBorrado() {
 		return this.estaBorrado;
 	}
