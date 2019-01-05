@@ -14,12 +14,12 @@ public class PersonaService {
 
 	public PersonaService() {
 		dao = new DAOPersonaImpl();
-
 	}
 	
 	public boolean save(Persona persona) throws PersonaServiceException {
 		
-		dao = new DAOPersonaImpl();	
+		dao = new DAOPersonaImpl();
+
 		boolean ret = false;
 		
 		ret = dao.save(persona);
@@ -35,6 +35,4 @@ public class PersonaService {
 		
 		return ret;
 	}
-	
-
-}
+	}

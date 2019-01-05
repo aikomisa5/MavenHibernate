@@ -26,7 +26,8 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
     };
 
     public DAOGenericoImpl(Class<T> clase) {
-	this.clase = clase;
+
+		this.clase = clase;
     }
 	
 	public boolean save(T entidad) {
@@ -68,7 +69,6 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 		return ret;
 	}
 
-	@Override
 	public boolean saveOrUpdate(T entidad) {
 		boolean ret = false;
 		Session session = ConexionHibernate.openSession();
@@ -88,7 +88,6 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 		return ret;
 	}
 
-	@Override
 	public boolean create(T entidad) {
 		boolean resultado = false;
 		Session session = ConexionHibernate.openSession();
@@ -113,7 +112,6 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 		return resultado;
 	}
 
-	@Override
 	public List<T> readAll() {
 		List<T> entidades = new ArrayList<T>();
 		Session session = ConexionHibernate.openSession();
@@ -136,7 +134,7 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 		return clase;
 	    }
 
-	@Override
+
 	public List<T> readAllActives() {
 		DetachedCriteria criteria = DetachedCriteria.forClass(getClaseEntidad())
 				.add(Restrictions.eq(estadoRegistro, true)).setResultTransformer(
@@ -147,12 +145,18 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 	protected List<T> borrarRepetidos(List<T> lista) {
 		Set<T> conjunto = new HashSet<>();
 		List<T> ret = new ArrayList<>();
-		lista.forEach(elemento -> conjunto.add(elemento));
-		conjunto.forEach(elemento -> ret.add(elemento));
+		for (T elem : lista){
+			conjunto.add(elem);
+		}
+		for (T elem: conjunto){
+			ret.add(elem);
+		}
+		//lista.forEach(elemento -> conjunto.add(elemento));
+		//conjunto.forEach(elemento -> ret.add(elemento));
 		return ret;
 	    }
 
-	@Override
+
 	public boolean update(T entidad) {
 		boolean ret = false;
 		Session session = ConexionHibernate.openSession();
@@ -172,7 +176,6 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 		return ret;
 	}
 
-	@Override
 	public boolean logicalDelete(T entidad) {
 		boolean ret = false;
 		Session session = ConexionHibernate.openSession();
@@ -193,7 +196,7 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 		return ret;
 	}
 
-	@Override
+
 	public T findById(Long id) {
 		T entidad = null;
 		Session session = ConexionHibernate.openSession();
@@ -212,7 +215,6 @@ public class DAOGenericoImpl<T extends CRUD> implements DAOGenerico<T>{
 		return entidad;
 	}
 
-	@Override
 	public boolean merge(T entidad) {
 		// TODO Auto-generated method stub
 		return false;
