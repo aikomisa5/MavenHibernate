@@ -1,4 +1,4 @@
-package com.PruebaMavenHibernate.services;
+package main.java.com.PruebaMavenHibernate.services;
 
 import org.apache.log4j.Logger;
 
