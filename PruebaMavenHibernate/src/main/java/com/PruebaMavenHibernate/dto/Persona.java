@@ -1,5 +1,7 @@
 package com.PruebaMavenHibernate.dto;
 
+import com.PruebaMavenHibernate.interfaces.CRUD;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,21 +12,21 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "personas")
-public class Persona implements CRUD{
+public class Persona implements CRUD {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "idPersona")
+	@Column(name = "idPersona", nullable = false, unique = true, length = 11)
 	private Long id;
-	@Column(name = "nombre")
+	@Column(name = "nombre", length = 30, nullable = true)
 	private String nombre;
-	@Column(name = "apellido")
+	@Column(name = "apellido", length = 30, nullable = true)
 	private String apellido;
-	@Column(name = "edad")
+	@Column(name = "edad", length = 3, nullable = true)
 	private int edad;
-	@Column(name = "mail")
+	@Column(name = "mail", nullable = true)
 	private String mail;
-	@Column(name = "dni")
+	@Column(name = "dni", nullable = true)
 	private String dni;
 	@Column(name = "estadoRegistro")
 	private boolean estaBorrado;

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
 
-import com.PruebaMavenHibernate.dto.CRUD;
+import com.PruebaMavenHibernate.interfaces.CRUD;
 
 public interface DAOGenerico <T extends CRUD> {
 	public boolean saveOrUpdate(T entidad);

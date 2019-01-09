@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.PruebaMavenHibernate.data.conexion.ConexionJPA;
 import com.PruebaMavenHibernate.data.conexion.TipoConexion;
-import com.PruebaMavenHibernate.data.dao.DAOPersonaImplJPA;
+import com.PruebaMavenHibernate.data.dao.implementations.DAOPersonaImplJPA;
 
 public class ConexionJPATest {
 

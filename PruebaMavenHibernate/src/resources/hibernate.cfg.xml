@@ -21,8 +21,6 @@
 		<property name="hibernate.c3p0.acquireRetryDelay">250</property>
 		<property name="hibernate.event.merge.entity_copy_observer">allow</property>
 
-
-
 		<!-- Echo all executed SQL to stdout <property name="show_sql">true</property> -->
 
 		<!-- Names the annotated entity class -->
