@@ -4,19 +4,19 @@ import com.PruebaMavenHibernate.data.dao.implementations.DAOPersonaImplHibernate
 import org.apache.log4j.Logger;
 
 import com.PruebaMavenHibernate.dto.Persona;
-import com.PruebaMavenHibernate.exceptions.PersonaServiceException;
+import com.PruebaMavenHibernate.exceptions.*;
 
 public class PersonaService {
 	
 	DAOPersonaImplHibernate dao;
 	
-	private final static Logger logger = Logger.getLogger(PersonaService.class);
+	private final static Logger logger = Logger.getLogger("logFile");
 
 	public PersonaService() {
 		dao = new DAOPersonaImplHibernate();
 	}
 	
-	public boolean save(Persona persona) throws PersonaServiceException {
+	public boolean save(Persona persona) throws PersonaServiceException  {
 		
 		dao = new DAOPersonaImplHibernate();
 

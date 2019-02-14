@@ -14,7 +14,7 @@ import com.PruebaMavenHibernate.services.PersonaService;
 public class DAOGenericoImplJPA <T extends CRUD>  implements DAOGenerico<T>{
 
 	Class <T> clase;
-	public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DAOGenericoImplJPA.class);
+	public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("logFile");
 	
 	public DAOGenericoImplJPA(Class<T> clase) {
 		this.clase=clase;
