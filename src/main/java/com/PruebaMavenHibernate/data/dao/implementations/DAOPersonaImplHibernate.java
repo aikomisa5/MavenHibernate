@@ -7,12 +7,10 @@ public class DAOPersonaImplHibernate extends DAOGenericoImplHibernate<Persona> i
 
 	/*public DAOPersonaImplHibernate(Class<Persona> clase) {
 		super(clase);
-		// TODO Auto-generated constructor stub
 	}*/
 
 	public DAOPersonaImplHibernate() {
 		super(Persona.class);
-		// TODO Auto-generated constructor stub
 	}
 
 }

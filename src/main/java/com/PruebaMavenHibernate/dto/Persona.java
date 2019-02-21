@@ -28,11 +28,11 @@ public class Persona implements CRUD {
 	private String mail;
 	@Column(name = "dni", nullable = true)
 	private String dni;
-	@Column(name = "estadoRegistro")
-	private boolean estaBorrado;
+	@Column(name = "activo")
+	private boolean activo;
 	
 	public Persona() {
-		this.estaBorrado = false;		
+		this.activo = true;
 	}
 	
 	public Persona(String nombre, String apellido, int edad, String mail, String dni) {
@@ -41,16 +41,7 @@ public class Persona implements CRUD {
 		this.edad = edad;
 		this.mail = mail;
 		this.dni = dni;	
-		this.estaBorrado = false;	
-	}
-	
-	protected Persona(Builder b) {
-		this.nombre = b.nombre;
-		this.apellido = b.apellido;
-		this.dni = b.dni;
-		this.mail = b.mail;
-		this.edad = b.edad;
-		this.estaBorrado = false;
+		this.activo = true;
 	}
 	
 	public Long getId() {
@@ -91,57 +82,18 @@ public class Persona implements CRUD {
 	public void setDni(String dni) {
 		this.dni = dni;
 	}
-	
-	public void setBorrado(Boolean estaBorrado) {
-		this.estaBorrado = estaBorrado;
-		
+
+	@Override
+	public void setActivo(Boolean activo) {
+		this.activo = activo;
 	}
-	
-	public Boolean getBorrado() {
-		return this.estaBorrado;
+
+	public boolean getActivo() {
+		return activo;
 	}
-	
-	public static class Builder {
-		protected Long id;
-		protected String nombre;
-		protected String apellido;
-		protected int edad;
-		protected String mail;
-		protected String dni;
-		
-		public Builder setId (Long dato) {
-			this.id = dato;
-			return this;
-		}
-		
-		public Builder setNombre(String dato) {
-			this.nombre = dato;
-			return this;
-		}
-		
-		public Builder setApellido(String dato) {
-			this.apellido = dato;
-			return this;
-		}
-		
-		public Builder setEdad(int dato) {
-			this.edad = dato;
-			return this;
-		}
-		
-		public Builder setMail(String dato) {
-			this.mail = dato;
-			return this;
-		}
-		
-		public Builder setDNI(String dato) {
-			this.dni = dato;
-			return this;
-		}
-		
-		public Persona build() {
-			return new Persona(this);
-		}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
 	}
 
 	

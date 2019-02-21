@@ -19,205 +19,233 @@ import com.PruebaMavenHibernate.interfaces.CRUD;
 public class DAOGenericoImplHibernate<T extends CRUD> implements DAOGenerico<T>{
 	
 	private Class<T> clase;
-    private static final String estadoRegistro = "estadoRegistro";
+    private static final String activo = "activo";
 
     private DAOGenericoImplHibernate() {
-
-    };
+    }
 
     public DAOGenericoImplHibernate(Class<T> clase) {
-
 		this.clase = clase;
     }
-	
-	public boolean save(T entidad) {
-		if (exists(entidad)) {
-		    return update(entidad);
-		}
-		return create(entidad);
-	}
-	
-	public boolean exists(T entidad) {
-		if (entidad.getId() == null) {
-		    return false;
-		}
-		T ret = findById(entidad.getId());
-		if (ret != null) {
-		    return true;
-		}
-		return false;
-	    }
 
-	public boolean delete(T entidad) {
-		boolean ret = false;
+	private String nombreClase() {
+		return clase.getName().substring(clase.getName().lastIndexOf(".")+1);
+	}
+
+	private Class<T> getClaseEntidad() {
+		return clase;
+	}
+
+	public boolean create(T entidad) {
+		boolean resultado = false;
+
 		Session session = ConexionHibernate.openSession();
 		Transaction tx = null;
+
 		try {
-		    tx = session.beginTransaction();
-		    @SuppressWarnings("unchecked")
-		    T toDelete = (T) session.get(entidad.getClass(), entidad.getId());
-		    session.delete(toDelete);
-		    tx.commit();
-		    ret = true;
-		} catch (HibernateException e) {
-		    System.err.println("Error al delete: " + entidad);
-		    e.printStackTrace();
-		   if(tx!=null) tx.rollback();
-		} finally {
-		    session.close();
+			tx = session.beginTransaction();
+			session.persist(entidad);
+			tx.commit();
+			resultado = true;
 		}
-		return ret;
+		catch (HibernateException e) {
+			System.err.println("---------------------------------------------");
+			System.err.println("---------------------------------------------");
+			System.err.println("Error al intentar hacer create de la entidad: " + entidad);
+			System.err.println("---------------------------------------------");
+			System.err.println("---------------------------------------------");
+
+			e.printStackTrace();
+		}
+		finally {
+			session.close();
+		}
+
+		return resultado;
+	}
+
+	public boolean save(T entidad) {
+		if (exists(entidad)) {
+			return update(entidad);
+		}
+		else {
+			return create(entidad);
+		}
+	}
+
+	public boolean update(T entidad) {
+		boolean resultado = false;
+
+		Session session = ConexionHibernate.openSession();
+		Transaction tx = null;
+
+		try {
+			tx = session.beginTransaction();
+			session.merge(entidad);
+			tx.commit();
+			resultado = true;
+		}
+		catch (HibernateException e) {
+			System.err.println("Error al realizar update: " + entidad);
+			e.printStackTrace();
+			if(tx!=null) tx.rollback();
+		}
+		finally {
+			session.close();
+		}
+
+		return resultado;
 	}
 
 	public boolean saveOrUpdate(T entidad) {
-		boolean ret = false;
+		boolean resultado = false;
+
 		Session session = ConexionHibernate.openSession();
 		Transaction tx = null;
 		try {
 			tx = session.beginTransaction();
 			session.saveOrUpdate(entidad);
 			tx.commit();
-			ret = true;
-		} catch (HibernateException e) {
-			System.err.println("Error al guardar: " + entidad);
+			resultado = true;
+		}
+		catch (HibernateException e) {
+			System.err.println("Error al intentar hacer saveOrUpdate de la entidad: " + entidad);
 			e.printStackTrace();
 			if(tx!=null) tx.rollback();
-		} finally {
+		}
+		finally {
 			session.close();
 		}
-		return ret;
+
+		return resultado;
 	}
 
-	public boolean create(T entidad) {
+	public boolean delete(T entidad) {
 		boolean resultado = false;
+
 		Session session = ConexionHibernate.openSession();
 		Transaction tx = null;
-		try {
-		    tx = session.beginTransaction();
-		    session.persist(entidad);
-		    tx.commit();
-		    resultado = true;
-		} catch (HibernateException e) {
-		    System.err.println("---------------------------------------------");
-		    System.err.println("---------------------------------------------");
-		    System.err.println("Error al intentar crear: ");
-		    System.err.println(entidad);
-		    System.err.println("---------------------------------------------");
-		    System.err.println("---------------------------------------------");
 
-		    e.printStackTrace();
-		} finally {
-		    session.close();
+		try {
+			tx = session.beginTransaction();
+			@SuppressWarnings("unchecked")
+			T toDelete = (T) session.get(entidad.getClass(), entidad.getId());
+			session.delete(toDelete);
+			tx.commit();
+			resultado = true;
 		}
+		catch (HibernateException e) {
+			System.err.println("Error al intentar hacer delete de la entidad: " + entidad);
+			e.printStackTrace();
+			if(tx!=null) tx.rollback();
+		}
+		finally {
+			session.close();
+		}
+
 		return resultado;
+	}
+	
+	public boolean exists(T entidad) {
+		if (entidad.getId() == null) {
+		    return false;
+		}
+
+		T resultado = findById(entidad.getId());
+
+		if (resultado != null) {
+		    return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	public List<T> readAll() {
 		List<T> entidades = new ArrayList<T>();
+
 		Session session = ConexionHibernate.openSession();
 		Transaction tx = null;
+
 		try {
 		    tx = session.beginTransaction();
 		    entidades = session.createQuery("from " + getClaseEntidad().getSimpleName()).list();
 		    tx.commit();
-		} catch (HibernateException e) {
-		    System.err.println("Error al leer " + getClaseEntidad().getSimpleName());
+		}
+		catch (HibernateException e) {
+		    System.err.println("Error al hacer un readAll para leer: " + getClaseEntidad().getSimpleName());
 		     e.printStackTrace();
 		     if(tx!=null) tx.rollback();
-		} finally {
+		}
+		finally {
 		    session.close();
 		}
+
 		return entidades;
 	}
-	
-	public Class<T> getClaseEntidad() {
-		return clase;
-	    }
-
 
 	public List<T> readAllActives() {
-		DetachedCriteria criteria = DetachedCriteria.forClass(getClaseEntidad())
-				.add(Restrictions.eq(estadoRegistro, true)).setResultTransformer(
-					Criteria.DISTINCT_ROOT_ENTITY);
-			return borrarRepetidos(findByCriteria(criteria));
+		List<T> lista = new ArrayList<T>();
+
+		try{
+			DetachedCriteria criteria = DetachedCriteria.forClass(getClaseEntidad())
+				.add(Restrictions.eq(activo, true)).setResultTransformer(
+						Criteria.DISTINCT_ROOT_ENTITY);
+
+			lista = borrarRepetidos(findByCriteria(criteria));
+
+		}
+		catch(HibernateException e){
+			System.err.println("Error al hacer un readAll para leer: " + getClaseEntidad().getSimpleName());
+			e.printStackTrace();
+		}
+
+		return lista;
 	}
-	
-	protected List<T> borrarRepetidos(List<T> lista) {
-		Set<T> conjunto = new HashSet<>();
-		List<T> ret = new ArrayList<>();
-		for (T elem : lista){
-			conjunto.add(elem);
-		}
-		for (T elem: conjunto){
-			ret.add(elem);
-		}
-		//lista.forEach(elemento -> conjunto.add(elemento));
-		//conjunto.forEach(elemento -> ret.add(elemento));
-		return ret;
-	    }
-
-
-	public boolean update(T entidad) {
-		boolean ret = false;
-		Session session = ConexionHibernate.openSession();
-		Transaction tx = null;
-		try {
-		    tx = session.beginTransaction();
-		    session.merge(entidad);
-		    tx.commit();
-		    ret = true;
-		} catch (HibernateException e) {
-		    System.err.println("Error al realizar update: " + entidad);
-		    e.printStackTrace();
-		   if(tx!=null) tx.rollback();
-		} finally {
-		    session.close();
-		}
-		return ret;
-	}
-
-	public boolean logicalDelete(T entidad) {
-		boolean ret = false;
-		Session session = ConexionHibernate.openSession();
-		Transaction tx = null;
-		try {
-		    tx = session.beginTransaction();
-		    entidad.setBorrado(true);
-		    session.update(entidad);
-		    tx.commit();
-		    ret = true;
-		} catch (HibernateException e) {
-		    System.err.println("Error al ejecutar LogicalDelte: " + entidad);
-		    e.printStackTrace();
-		   if(tx!=null) tx.rollback();
-		} finally {
-		    session.close();
-		}
-		return ret;
-	}
-
 
 	public T findById(Long id) {
 		T entidad = null;
 		Session session = ConexionHibernate.openSession();
 		Transaction tx = null;
+
 		try {
-		    tx = session.beginTransaction();
-		    entidad = session.get(clase, id);
-		    tx.commit();
-		} catch (HibernateException e) {
-		    System.err.println("Error al buscar por Id: " + id);
-		    e.printStackTrace();
-		   if(tx!=null) tx.rollback();
-		} finally {
-		    session.close();
+			tx = session.beginTransaction();
+			entidad = session.get(clase, id);
+			tx.commit();
 		}
+		catch (HibernateException e) {
+			System.err.println("Error al buscar por entidad por id con findById: " + id);
+			e.printStackTrace();
+			if(tx!=null) tx.rollback();
+		}
+		finally {
+			session.close();
+		}
+
 		return entidad;
 	}
+	
+	protected List<T> borrarRepetidos(List<T> lista) {
+		List<T> ret =  new ArrayList<>();;
+		try {
+			Set<T> conjunto = new HashSet<>();
+			for (T elem : lista) {
+				conjunto.add(elem);
+			}
+			for (T elem : conjunto) {
+				ret.add(elem);
+			}
+			//lista.forEach(elemento -> conjunto.add(elemento));
+			//conjunto.forEach(elemento -> ret.add(elemento));
+		}
+		catch(Exception e){
+			System.err.println("Error al intentar borrrar valores repetidos..");
+			e.printStackTrace();
+		}
 
-	public boolean merge(T entidad) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+		return ret;
+	    }
+
+
 
 }

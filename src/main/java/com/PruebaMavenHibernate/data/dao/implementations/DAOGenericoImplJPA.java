@@ -1,19 +1,18 @@
 package com.PruebaMavenHibernate.data.dao.implementations;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 
 import com.PruebaMavenHibernate.data.conexion.ConexionJPA;
 import com.PruebaMavenHibernate.data.dao.interfaces.DAOGenerico;
 import com.PruebaMavenHibernate.interfaces.CRUD;
-import com.PruebaMavenHibernate.services.PersonaService;
 
 
 public class DAOGenericoImplJPA <T extends CRUD>  implements DAOGenerico<T>{
 
 	Class <T> clase;
+
 	public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("logFile");
 	
 	public DAOGenericoImplJPA(Class<T> clase) {
@@ -24,93 +23,167 @@ public class DAOGenericoImplJPA <T extends CRUD>  implements DAOGenerico<T>{
 		return clase.getName().substring(clase.getName().lastIndexOf(".")+1);
 	}
 
-	public boolean saveOrUpdate(T objeto) {
-		boolean ret=false;
-		EntityManager em =ConexionJPA.getEntityManager();
+	private Class<T> getClaseEntidad() {
+		return clase;
+	}
+
+	public boolean create(T entidad) {
+
+		boolean resultado = false;
+		EntityManager em = ConexionJPA.getEntityManager();
+
 		try {
 			em.getTransaction().begin();
-			em.merge(objeto);
-			em.getTransaction().commit();
-			ret=true;
-		} catch (Exception e) {
+
+			if (!exists(entidad)) {
+				em.persist(entidad);
+				em.getTransaction().commit();
+				resultado = true;
+				logger.info("Entidad creada con éxito..");
+			} else {
+				logger.info("No se puede crear la entidad porque ya existe..");
+				resultado = false;
+			}
+		}
+		catch(Exception e){
 			e.printStackTrace();
-		}finally {
-			System.out.println("Cerrado");
+		}
+		finally {
 			em.close();
-		}
-		return ret;
-	}
-
-	public boolean delete(T objeto) throws IllegalArgumentException {
-		if(objeto.getId()==null)
-			throw new IllegalArgumentException("El id del objeto es nulo");
-		boolean ret=false;
-		EntityManager em =ConexionJPA.getEntityManager();
-		em.getTransaction().begin();
-		em.remove(em.contains(objeto) ? objeto : em.merge(objeto));
-		em.getTransaction().commit();
-		em.close();
-		return ret;
-	}
-
-
-	@SuppressWarnings("unchecked")
-	public T findById(Long id) {
-		T ret=null;
-		EntityManager em =ConexionJPA.getEntityManager();
-		em.getTransaction().begin();
-		ret=(T) em.createQuery("SELECT o FROM "+clase.getName()+" o WHERE o.id = "+id).getResultList().get(0);
-		em.getTransaction().commit();
-		em.close();
-		return ret;
-	}
-
-	public boolean exists (T entidad){
-		boolean ret = false;
-		T objetoTemp = this.findById(entidad.getId());
-
-		if (objetoTemp != null){
-			ret = true;
+			logger.info("Cerrando el entity manager");
 		}
 
-		return ret;
+		return resultado;
 	}
 
 	public boolean save(T entidad) {
-		boolean ret = false;
+		boolean resultado = false;
 
-		if (exists(entidad)){
-			ret = update(entidad);
+		try {
+			if (exists(entidad)) {
+				resultado = update(entidad);
+			} else {
+				resultado = create(entidad);
+			}
 		}
-		else{
-			ret = create(entidad);
+		catch (Exception e){
+			e.printStackTrace();
 		}
 
-		return ret;
+		return resultado;
 	}
 
-	@Override
-	public boolean create(T entidad) {
+	public boolean update(T entidad) {
+		boolean resultado = false;
 
-		boolean ret = false;
 		EntityManager em = ConexionJPA.getEntityManager();
-		em.getTransaction().begin();
 
-		if (!exists(entidad)){
-			em.persist(entidad);
+		try {
+			em.getTransaction().begin();
+			em.merge(entidad);
 			em.getTransaction().commit();
-			ret = true;
-			logger.info("Entidad creada con exito..");
+			resultado=true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			logger.info("Cerrando el Entity Manager..");
+			em.close();
 		}
 
-		else{
-			logger.info("No se puede crear la entidad porque ya existe la entidad");
-			ret = false;
-		}
-		return ret;
+		return resultado;
 	}
 
-	@Override
+	public boolean saveOrUpdate(T objeto) {
+		boolean resultado = false;
+
+		EntityManager em =ConexionJPA.getEntityManager();
+
+		try {
+			if (exists(objeto) == false){
+				create(objeto);
+				resultado = true;
+			}
+			else {
+				em.getTransaction().begin();
+				em.merge(objeto);
+				em.getTransaction().commit();
+				resultado = true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			em.close();
+			logger.info("Cerrando EntityManager en saveOrUpdate..");
+		}
+		return resultado;
+	}
+
+	public boolean delete(T objeto) throws IllegalArgumentException {
+		if(objeto.getId()==null) {
+			throw new IllegalArgumentException("El id del objeto es nulo");
+		}
+
+		boolean resultado=false;
+		EntityManager em =ConexionJPA.getEntityManager();
+
+		try {
+			em.getTransaction().begin();
+			em.remove(em.contains(objeto) ? objeto : em.merge(objeto));
+			em.getTransaction().commit();
+			em.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		finally {
+			em.close();
+			logger.info("Cerrando entity manager..");
+		}
+		return resultado;
+	}
+
+	public boolean exists (T entidad){
+		boolean resultado = false;
+
+		try {
+			T objetoTemp = this.findById(entidad.getId());
+
+			if (objetoTemp != null) {
+				resultado = true;
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+
+		return resultado;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T findById(Long id) {
+		T resultado=null;
+		EntityManager em =ConexionJPA.getEntityManager();
+
+		try {
+			em.getTransaction().begin();
+			resultado = (T) em.createQuery("SELECT o FROM " + clase.getName() + " o WHERE o.id = " + id).getResultList().get(0);
+			em.getTransaction().commit();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		finally {
+			em.close();
+			logger.info("Cerrando el Entity Manager..");
+		}
+
+		return resultado;
+	}
+
 	public List<T> readAll() throws Exception {
 		List <T> lista = null;
 		T ret = null;
@@ -127,48 +200,35 @@ public class DAOGenericoImplJPA <T extends CRUD>  implements DAOGenerico<T>{
 			throw new RuntimeException("",e);
 		}
 		finally {
-			logger.info("Cerrando el Entity Manager..");
 			em.close();
+			logger.info("Cerrando el Entity Manager..");
 		}
 
 		return lista;
 	}
 
-	@Override
 	public List<T> readAllActives() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		List <T> lista = null;
+		T ret = null;
 
-	@Override
-	public boolean update(T entidad) {
-		boolean ret=false;
-		EntityManager em =ConexionJPA.getEntityManager();
+		EntityManager em = ConexionJPA.getEntityManager();
+
 		try {
 			em.getTransaction().begin();
-			em.merge(entidad);
+
+			lista = (List<T>) em.createQuery("SELECT o FROM " + getClaseEntidad().getName() + " o WHERE o.activo = 'true'").getResultList();
 			em.getTransaction().commit();
-			ret=true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			logger.info("Cerrando Entity Manager");
-			em.close();
 		}
-		return ret;
-	}
+		catch (Exception e){
+			logger.info("Ocurrio una excepcion al intentar obtener todas las entidades activas..");
+			throw new RuntimeException("",e);
+		}
+		finally {
+			em.close();
+			logger.info("Cerrando el Entity Manager..");
+		}
 
-	@Override
-	public boolean logicalDelete(T entidad) {
-		// TODO Auto-generated method stub
-		return false;
+		return lista;
 	}
-
-	@Override
-	public boolean merge(T entidad) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 
 }
