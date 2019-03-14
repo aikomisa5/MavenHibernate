@@ -47,11 +47,9 @@ public class Persona implements CRUD {
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public String getNombre() {
 		return nombre;
 	}
@@ -82,20 +80,14 @@ public class Persona implements CRUD {
 	public void setDni(String dni) {
 		this.dni = dni;
 	}
-
-	@Override
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}
-
 	public boolean getActivo() {
 		return activo;
 	}
-
 	public void setActivo(boolean activo) {
 		this.activo = activo;
 	}
-
-	
 	
 }

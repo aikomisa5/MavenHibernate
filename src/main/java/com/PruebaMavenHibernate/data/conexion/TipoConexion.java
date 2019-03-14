@@ -27,14 +27,22 @@ public enum TipoConexion {
 			,"root"
 			,"false"
 			,"create-drop"),
-
 	MariaDBServer("org.hibernate.dialect.MariaDB53Dialect"
 			,"org.mariadb.jdbc.Driver"
 			,"jdbc:mysql://localhost:3306/pruebaserver"
 			,"root"
 			,"root"
 			,"false"
-			,"create-drop");
+			,"create-drop"),
+	MySQLServer("org.hibernate.dialect.MySQL5Dialect",
+			"com.mysql.jdbc.Driver"
+			,"jdbc:mysql://localhost/basePrueba"
+			,"root"
+			,"root"
+			,"false"
+			,"create-drop"
+	);
+
 		
 	private final String dialect;
 	private final String driver;
